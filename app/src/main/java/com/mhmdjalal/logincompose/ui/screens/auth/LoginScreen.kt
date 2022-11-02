@@ -10,10 +10,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.mhmdjalal.logincompose.navigation.LocalNavigationProvider
-import com.mhmdjalal.logincompose.repo.ResourceState.*
+import com.mhmdjalal.logincompose.ui.components.BaseLayout
 import com.mhmdjalal.logincompose.ui.components.ButtonLogin
 import com.mhmdjalal.logincompose.ui.components.EmailOutlinedTextField
-import com.mhmdjalal.logincompose.ui.components.LayoutAppBar
 import com.mhmdjalal.logincompose.ui.components.PasswordOutlinedText
 import org.koin.androidx.compose.koinViewModel
 
@@ -50,7 +49,7 @@ fun LoginScreen(
 
     val focusManager = LocalFocusManager.current
 
-    LayoutAppBar(title = "Login") {
+    BaseLayout {
         Column(
             modifier = Modifier
                 .fillMaxHeight()

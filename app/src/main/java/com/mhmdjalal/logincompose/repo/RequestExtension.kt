@@ -50,32 +50,43 @@ suspend inline fun <reified T> request(crossinline response: suspend () -> HttpR
 
 suspend inline fun <reified T> handlingResponse(crossinline response: suspend () -> HttpResponse): Flow<Resource<T>> = flow {
     var messageError: String? = null
-    val result = response()
+    try {
+        val result = response()
 
-    if (result.status.value in 200..299) {
-        // handle success response
-        result.body<T>()?.let { body ->
-            emit(Resource.success(body))
-        }
-    } else {
-        val errBody = result.bodyAsText()
-        try {
-            val resError = JSONObject(errBody)
-            if (resError.has("message")) {
-                messageError = resError.getString("message")
+        if (result.status.value in 200..299) {
+            // handle success response
+            result.body<T>()?.let { body ->
+                emit(Resource.success(body))
             }
+        } else {
+            try {
+                val errBody = result.bodyAsText()
+                val resError = JSONObject(errBody)
+                if (resError.has("message")) {
+                    messageError = resError.getString("message")
+                }
 
-            if (resError.has("meta")) {
-                val metaError = JSONObject(resError.getString("meta"))
-                messageError = metaError.getString("message")
+                if (resError.has("error")) {
+                    messageError = resError.getString("error")
+                }
+
+                if (resError.has("meta")) {
+                    val metaError = JSONObject(resError.getString("meta"))
+                    messageError = metaError.getString("message")
+                }
+            }  catch (e: SocketTimeoutException) {
+                messageError = "Waktu koneksi habis"
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+                messageError = exception.getErrorMessage()
             }
-        } catch (e: SocketTimeoutException) {
-            messageError = "Waktu koneksi habis"
-        } catch (exception: Exception) {
-            exception.printStackTrace()
-            messageError = exception.getErrorMessage()
-        } finally {
-            if (messageError != null) emit(Resource.error(messageError))
         }
+    } catch (e: SocketTimeoutException) {
+        messageError = "Waktu koneksi habis"
+    } catch (exception: Exception) {
+        exception.printStackTrace()
+        messageError = exception.getErrorMessage()
+    } finally {
+        if (messageError != null) emit(Resource.error(messageError))
     }
 }
