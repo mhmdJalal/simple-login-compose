@@ -10,7 +10,9 @@ import com.mhmdjalal.logincompose.navigation.NavigationRoute
 import com.mhmdjalal.logincompose.navigation.generateRouteWithJsonArg
 import com.mhmdjalal.logincompose.navigation.routeArg
 import com.mhmdjalal.logincompose.ui.screens.auth.LoginScreen
+import com.mhmdjalal.logincompose.ui.screens.auth.LoginViewModel
 import com.mhmdjalal.logincompose.ui.screens.home.HomeScreen
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * @author Created by Muhamad Jalaludin on 25/10/22
@@ -23,17 +25,19 @@ fun MyAppNavHost(
     val routeLogin = NavigationRoute.routeLogin
     val routeMain = NavigationRoute.routeMain
 
+    val viewModel = koinViewModel<LoginViewModel>()
+
     NavHost(
         modifier = modifier,
         navController = navController,
         startDestination = routeLogin.routeArg
     ) {
         composable(routeLogin.routeArg) {
-            LoginScreen()
+            LoginScreen(viewModel = viewModel)
         }
         composable(route = routeMain.routeArg, arguments = routeMain.namedNavArgs) {
             val token = routeMain.generateRouteWithJsonArg<String>(it.arguments)
-            HomeScreen(token = token)
+            HomeScreen(viewModel, token = token)
         }
     }
 }

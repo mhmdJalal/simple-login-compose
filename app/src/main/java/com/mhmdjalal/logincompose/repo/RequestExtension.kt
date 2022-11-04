@@ -43,6 +43,9 @@ suspend inline fun <reified T> request(crossinline response: suspend () -> HttpR
         exception.printStackTrace()
         val messageError = exception.getErrorMessage()
         emit(Resource.error(messageError))
+    } catch (t: Throwable) {
+        t.printStackTrace()
+        emit(Resource.error("Oops, An error occurred, please try again in a moment"))
     } finally {
         emit(Resource.loading(showLoading = false))
     }
@@ -86,6 +89,9 @@ suspend inline fun <reified T> handlingResponse(crossinline response: suspend ()
     } catch (exception: Exception) {
         exception.printStackTrace()
         messageError = exception.getErrorMessage()
+    } catch (t: Throwable) {
+        t.printStackTrace()
+        messageError = "Oops, An error occurred, please try again in a moment"
     } finally {
         if (messageError != null) emit(Resource.error(messageError))
     }

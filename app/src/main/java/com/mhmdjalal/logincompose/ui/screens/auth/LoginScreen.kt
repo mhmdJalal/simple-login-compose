@@ -35,14 +35,13 @@ fun LoginScreen(
     val errorResult = viewModel.errorMessage.collectAsState().value
 
     if (!loginResult?.token.isNullOrEmpty()) {
-        LaunchedEffect(key1 = Unit) {
+        LaunchedEffect(key1 = loginResult?.token) {
             Toast.makeText(context, "${loginResult?.token}", Toast.LENGTH_SHORT).show()
             navigationProvider.navigateToMain(loginResult?.token)
-            viewModel.setDefault()
         }
     }
     if (!errorResult.isNullOrEmpty()) {
-        LaunchedEffect(key1 = Unit) {
+        LaunchedEffect(key1 = errorResult) {
             Toast.makeText(context, errorResult, Toast.LENGTH_SHORT).show()
         }
     }
